@@ -56,7 +56,6 @@ Ensure you have the following installed:
 
 - **Prototype Link**: [Click Here](https://sih-1638.vercel.app/)
 - **GitHub Repository**: [Click Here](https://github.com/AjayRauniyar/SIH-1638)
-- **Video Demo**: [Click Here](https://drive.google.com/file/d/1IUIm38H3GS4mX5eTNzxsu_D-F-HFMEj9/view?usp=drive_link)
 
 For further assistance, refer to the [Flutter documentation](https://docs.flutter.dev/).
 
