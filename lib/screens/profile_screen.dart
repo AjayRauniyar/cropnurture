@@ -1,32 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:google_fonts/google_fonts.dart';
-void main() => runApp(FarmerApp());
 
-class FarmerApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ProfileScreen(),
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        fontFamily: GoogleFonts.poppins().fontFamily,
-      ),
-    );
-  }
-}
 
 class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade200,
-      appBar: AppBar(
-        title: Text("Profile", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.green,
-        elevation: 0,
-      ),
+      // appBar: AppBar(
+      //   title: Text("Profile", style: TextStyle(color: Colors.white)),
+      //   backgroundColor: Colors.green,
+      //   elevation: 0,
+      // ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -48,8 +31,9 @@ class ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
+        Padding(padding: EdgeInsets.all(10)),
         Container(
-          height: 200,
+          height: 250,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.green.shade400, Colors.green.shade700],
@@ -63,21 +47,21 @@ class ProfileHeader extends StatelessWidget {
           ),
         ),
         Positioned(
-          left: 20,
-          top: 50,
+          left: 40,
+          top: 100,
           child: CircleAvatar(
             radius: 50,
             backgroundImage: AssetImage('assets/images/farmer.jpg'), // Replace with local image
           ),
         ),
         Positioned(
-          left: 140,
-          top: 70,
+          left: 170,
+          top: 100,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Ajay Rauniyar",
+                "Rahul Raj",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 22,
@@ -86,8 +70,20 @@ class ProfileHeader extends StatelessWidget {
               ),
               SizedBox(height: 5),
               Text(
-                "Nagenahalli",
+                "Bengaluru",
                 style: TextStyle(color: Colors.white70, fontSize: 16),
+              ),
+              SizedBox(height: 5),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Text(
+                  "Premium Member",
+                  style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
@@ -119,14 +115,10 @@ class ProfileDetailsSection extends StatelessWidget {
           SizedBox(height: 10),
           Column(
             children: details.map((detail) {
-              return Neumorphic(
+              return Card(
                 margin: EdgeInsets.only(bottom: 15),
-                style: NeumorphicStyle(
-                  color: Colors.white,
-                  depth: 4,
-                  shadowDarkColor: Colors.grey.shade300,
-                  shadowLightColor: Colors.white,
-                ),
+                elevation: 3,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 child: ListTile(
                   leading: Icon(detail['icon'] as IconData, color: Colors.green),
                   title: Text(detail['title'] as String, style: TextStyle(fontWeight: FontWeight.bold)),
@@ -171,13 +163,9 @@ class BusinessMetricsSection extends StatelessWidget {
             ),
             itemBuilder: (context, index) {
               final metric = metrics[index];
-              return Neumorphic(
-                style: NeumorphicStyle(
-                  color: Colors.white,
-                  depth: 4,
-                  shadowDarkColor: Colors.grey.shade300,
-                  shadowLightColor: Colors.white,
-                ),
+              return Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                elevation: 3,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

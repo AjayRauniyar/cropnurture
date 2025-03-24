@@ -1,14 +1,37 @@
+import 'package:cropnurture/models/doctor_list_screen.dart';
 import 'package:cropnurture/onboarding_screen/onboarding_screen.dart';
+import 'package:cropnurture/providers/api_provider.dart';
+import 'package:cropnurture/providers/crop_scanner_provider.dart';
+import 'package:cropnurture/providers/language_provider.dart';
+import 'package:cropnurture/providers/weather_provider.dart';
+import 'package:cropnurture/screens/Google_maps_screen.dart';
 import 'package:cropnurture/screens/Home_screen.dart';
-import 'package:cropnurture/screens/home.dart';
+import 'package:cropnurture/screens/analyse_screen/cause_crop_screen.dart';
+import 'package:cropnurture/screens/analyse_screen/fertilizer_crop_screen.dart';
+import 'package:cropnurture/screens/crop_screen.dart';
+import 'package:cropnurture/screens/discussion_page.dart';
+import 'package:cropnurture/screens/language_selection_screen.dart';
+import 'package:cropnurture/screens/login_signup_screen.dart';
 import 'package:cropnurture/screens/navbar.dart';
+import 'package:cropnurture/screens/outbreak_alerts_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CropScannerProvider()),
+        ChangeNotifierProvider(create: (_) => WeatherProvider()),
+        ChangeNotifierProvider(create: (_) => ApiProvider()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -16,16 +39,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'CropNurture',
       theme: ThemeData(
         primarySwatch: Colors.green,
         fontFamily: GoogleFonts.poppins().fontFamily,
       ),
-      home:  FarmerHome(),
+      builder: EasyLoading.init(),
+      home:  AnimatedLogoScreen(),
       debugShowCheckedModeBanner: false,
 
     );
-
   }
 }
 

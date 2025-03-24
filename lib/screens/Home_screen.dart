@@ -1,9 +1,26 @@
+import 'package:cropnurture/models/doctor_list_screen.dart';
+import 'package:cropnurture/screens/analyse_screen/fertilizer_crop_screen.dart';
+import 'package:cropnurture/screens/crop_screen.dart';
+import 'package:cropnurture/screens/discussion_page.dart';
+import 'package:cropnurture/screens/navbar.dart';
+import 'package:cropnurture/screens/outbreak_alerts_screen.dart';
+import 'package:cropnurture/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/weather_provider.dart';
 
 class HomeScreen extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    final weatherProvider = Provider.of<WeatherProvider>(context, listen: false);
+
+    // Fetch location and weather data when the screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      weatherProvider.fetchLocationAndWeather();
+    });
     return Scaffold(
       appBar: CurvedAppBar(),
       body: Column(
@@ -14,11 +31,11 @@ class HomeScreen extends StatelessWidget {
           Expanded(child: FeatureGrid()),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Colors.green,
-        child: Icon(Icons.add, size: 30),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {},
+      //   backgroundColor: Colors.green,
+      //   child: Icon(Icons.add, size: 30),
+      // ),
 
     );
   }
@@ -27,8 +44,9 @@ class HomeScreen extends StatelessWidget {
 class CurvedAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
+    final weatherProvider = Provider.of<WeatherProvider>(context);
     return Container(
-      height: 220,
+      height: 400,
       child: Stack(
         children: [
           ClipRRect(
@@ -37,14 +55,14 @@ class CurvedAppBar extends StatelessWidget implements PreferredSizeWidget {
               bottomRight: Radius.circular(30),
             ),
             child: Image.asset(
-              'assets/images/banner.jpeg', // Replace with your local image path
+              'assets/images/home2.webp', // Replace with your local image path
               width: double.infinity,
-              height: 220,
+              height: 300,
               fit: BoxFit.cover,
             ),
           ),
           Container(
-            height: 220,
+            height: 300,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30),
@@ -59,12 +77,12 @@ class CurvedAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: 30,vertical: 40),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Hello, Farmer!",
+                    "Hello, Farmer !",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -75,7 +93,7 @@ class CurvedAppBar extends StatelessWidget implements PreferredSizeWidget {
                     children: [
                       Icon(Icons.location_on, color: Colors.white, size: 20),
                       Text(
-                        "Your Location",
+                        weatherProvider.locationName,
                         style: TextStyle(color: Colors.white70, fontSize: 16),
                       ),
                     ],
@@ -83,10 +101,13 @@ class CurvedAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Spacer(),
                   Row(
                     children: [
-                      Icon(Icons.wb_sunny, color: Colors.yellow, size: 30),
+                      weatherProvider.weatherIconUrl.isNotEmpty
+                          ? Image.network(weatherProvider.weatherIconUrl,
+                          width: 30, height: 30)
+                          : Icon(Icons.cloud, color: Colors.white, size: 30),
                       SizedBox(width: 10),
                       Text(
-                        "28°C | Clear Sky",
+                        "${weatherProvider.temperature} | ${weatherProvider.weatherText}",
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                     ],
@@ -103,12 +124,20 @@ class CurvedAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(280);
 }
-
 class WeatherBannerWithImages extends StatelessWidget {
-  final List<String> imagePaths = [
-    'assets/images/banner.jpeg', // Replace with your local image paths
-    'assets/images/banner.jpeg',
-    'assets/images/banner.jpeg',
+  final List<Map<String, String>> bannerItems = [
+    {
+      'imagePath': 'assets/images/home1.jpg',
+      'text': 'Learn how to grow rice in the rainy season!',
+    },
+    {
+      'imagePath': 'assets/images/home3.jpg',
+      'text': 'Best tips for cultivating wheat during winter!',
+    },
+    {
+      'imagePath': 'assets/images/home4.jpg',
+      'text': 'Summer crops that thrive under the sun!',
+    },
   ];
 
   @override
@@ -119,13 +148,13 @@ class WeatherBannerWithImages extends StatelessWidget {
         autoPlay: true,
         enlargeCenterPage: true,
       ),
-      items: imagePaths.map((path) {
+      items: bannerItems.map((item) {
         return Container(
           margin: EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
             image: DecorationImage(
-              image: AssetImage(path),
+              image: AssetImage(item['imagePath']!),
               fit: BoxFit.cover,
             ),
           ),
@@ -141,7 +170,7 @@ class WeatherBannerWithImages extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
             ),
             child: Text(
-              "Learn Seasonal Crop Tips!",
+              item['text']!,
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
           ),
@@ -151,14 +180,15 @@ class WeatherBannerWithImages extends StatelessWidget {
   }
 }
 
+
 class FeatureGrid extends StatelessWidget {
   final features = [
-    {"icon": Icons.local_florist, "title": "Disease Detection", "color": Colors.teal},
-    {"icon": Icons.phone, "title": "Helpline", "color": Colors.blue},
-    {"icon": Icons.grass, "title": "Crop Care", "color": Colors.green},
-    {"icon": Icons.cloud, "title": "Weather Forecast", "color": Colors.orange},
-    {"icon": Icons.price_check, "title": "Market Prices", "color": Colors.purple},
-    {"icon": Icons.book, "title": "Knowledge Hub", "color": Colors.red},
+    {"icon": Icons.camera_alt, "title": "Disease Detection", "color": Colors.teal, "route": FarmerHome(defaultIndex: 1,)},
+    {"icon": Icons.add_alert, "title": "Outbreak", "color": Colors.blue, "route": FarmerHome(defaultIndex: 2,)},
+    {"icon": Icons.sanitizer, "title": "Fertilizer", "color": Colors.green, "route": FertilizerScreen()},
+    {"icon": Icons.chat, "title": "Discussion", "color": Colors.orange, "route": FarmerHome(defaultIndex: 3,)},
+    {"icon": Icons.help, "title": "Crop Expert", "color": Colors.purple, "route": DoctorListScreen()},
+    {"icon": Icons.person, "title": "Profile", "color": Colors.red, "route": FarmerHome(defaultIndex: 4,)},
   ];
 
   @override
@@ -176,6 +206,12 @@ class FeatureGrid extends StatelessWidget {
           icon: features[index]['icon'] as IconData,
           title: features[index]['title'] as String,
           color: features[index]['color'] as Color,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => features[index]['route'] as Widget),
+            );
+          },
         );
       },
     );
@@ -186,13 +222,14 @@ class FeatureTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final Color color;
+  final VoidCallback onTap;
 
-  FeatureTile({required this.icon, required this.title, required this.color});
+  FeatureTile({required this.icon, required this.title, required this.color, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -225,4 +262,3 @@ class FeatureTile extends StatelessWidget {
     );
   }
 }
-

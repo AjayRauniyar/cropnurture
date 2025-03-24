@@ -1,25 +1,46 @@
+import 'package:cropnurture/screens/crop_screen.dart';
+import 'package:cropnurture/screens/discussion_page.dart';
+import 'package:cropnurture/screens/outbreak_alerts_screen.dart';
 import 'package:cropnurture/screens/profile_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'Home_screen.dart';
 
 class FarmerHome extends StatefulWidget {
+  final int defaultIndex; // Accept default index as a parameter
+
+  FarmerHome({this.defaultIndex = 0}); // Default index is 0 if not specified
+
   @override
   _FarmerHomeState createState() => _FarmerHomeState();
 }
 
 class _FarmerHomeState extends State<FarmerHome> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.defaultIndex; // Initialize with the provided default index
+  }
 
   // List of pages for navigation
   final List<Widget> _pages = [
     HomeScreen(),
-    WeatherScreen(),
-    MarketScreen(),
+    CropScannerScreen(),
+    PredictionScreen(),
+    DiscussionPage(),
     ProfileScreen(),
   ];
+
+  // Method to navigate while keeping the navbar visible
+  void _navigateTo(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,63 +55,14 @@ class _FarmerHomeState extends State<FarmerHome> {
         animationCurve: Curves.easeInOut,
         items: [
           Icon(Icons.home, size: 30, color: Colors.white),
-          Icon(Icons.cloud, size: 30, color: Colors.white),
-          Icon(Icons.attach_money, size: 30, color: Colors.white),
+          Icon(FontAwesomeIcons.seedling, size: 30, color: Colors.white),
+          Icon(Icons.grass_sharp, size: 30, color: Colors.white),
+          Icon(Icons.chat_rounded, size: 30, color: Colors.white),
           Icon(Icons.person, size: 30, color: Colors.white),
         ],
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        index: _currentIndex, // Set the index for the navbar
+        onTap: _navigateTo,
       ),
     );
   }
 }
-
-// // Screens
-// class HomeScreen extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text("Home")),
-//       body: Center(
-//         child: Text(
-//           "Welcome to Farmer's Dashboard",
-//           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-class WeatherScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Weather")),
-      body: Center(
-        child: Text(
-          "Weather Updates",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-}
-
-class MarketScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Market Prices")),
-      body: Center(
-        child: Text(
-          "Market Price Information",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-}
-

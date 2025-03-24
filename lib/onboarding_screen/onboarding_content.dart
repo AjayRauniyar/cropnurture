@@ -15,7 +15,7 @@ class OnboardingContents {
 
 List<OnboardingContents> contents = [
   OnboardingContents(
-    title: "Welcome to CropNurture",
+    title: "Welcome to Krishi Aarogya",
     image: "assets/images/onboarding1.jpeg",
     desc: "",
   ),

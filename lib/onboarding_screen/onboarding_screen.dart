@@ -1,4 +1,5 @@
 import 'package:cropnurture/screens/Home_screen.dart';
+import 'package:cropnurture/screens/login_signup_screen.dart';
 import 'package:cropnurture/screens/navbar.dart';
 import 'package:flutter/material.dart';
 import 'onboarding_content.dart';
@@ -178,7 +179,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       if (_currentPage + 1 == contents.length) {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => FarmerHome()),
+                          MaterialPageRoute(builder: (context) => LoginScreen()),
                         );
                       } else {
                         _controller.nextPage(
