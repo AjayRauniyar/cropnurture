@@ -1,26 +1,24 @@
 import '../models/doctor.dart';
 
 final Map<String, List<Doctor>> doctorsData = {
-  "Apple": [
+  "Rice": [
     Doctor(
-      name: "Dr. John Appleton",
-      specialty: "Apple Pathology",
-      image: "assets/doctor/dr1.jpeg",
-      description: "Expert in Apple diseases like Scab and Black Rot.",
+      name: "Dr Virender Kumar",
+      specialty: "Rice Breeding Expert",
+      image: "assets/doctor/DR-1 RICE-modified.png",
+      description: "Expert in Rice breeding, disease resistance(IRRI).",
     ),
     Doctor(
-      name: "Dr. Sarah Fruits",
-      specialty: "Apple Agronomy",
-      image: "assets/doctor/dr2.jpeg",
-      description: "Specialist in Apple orchard management.",
+      name: "Dr T. Mohapatra",
+      specialty: "Rice disease Expert",
+      image: "assets/doctor/IMG-20241211-WA0011-modified.png",
+      description: "Specialist in Advanced research in rice disease,genetics(ICAR).",
     ),
-  ],
-  "Corn": [
     Doctor(
-      name: "Dr. Rohan Malhotra",
-      specialty: "Corn Pathology",
-      image: "assets/doctor/dr3.jpeg",
-      description: "Expert in Corn diseases like Common Rust.",
+      name: "Dr Himanshu Pathak",
+      specialty: "Rice disease Expert",
+      image: "assets/doctor/IMG-20241211-WA0012-modified.png",
+      description: "Expert in Climate-resilient agriculture,rice research,disease management(ICAR).",
     ),
   ],
 };

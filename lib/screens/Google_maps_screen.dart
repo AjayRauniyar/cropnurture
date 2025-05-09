@@ -1,241 +1,292 @@
-import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
-class NearbyStoresScreen extends StatefulWidget {
-  const NearbyStoresScreen({Key? key}) : super(key: key);
 
-  @override
-  State<NearbyStoresScreen> createState() => _NearbyStoresScreenState();
+class Shop {
+  final String name;
+  final double lat;
+  final double lng;
+  final String address;
+  final double rating;
+  final String phone;
+
+  Shop({
+    required this.name,
+    required this.lat,
+    required this.lng,
+    required this.address,
+    required this.rating,
+    required this.phone,
+  });
 }
 
-class _NearbyStoresScreenState extends State<NearbyStoresScreen> {
-  final Completer<GoogleMapController> _controller = Completer();
-  LatLng _defaultLocation = LatLng(37.7749, -122.4194); // Default to San Francisco
-  LatLng? _currentLocation;
-  List<Map<String, dynamic>> _places = [];
-  bool _loading = false;
+class AgriculturalCentersScreen extends StatefulWidget {
+  const AgriculturalCentersScreen({Key? key}) : super(key: key);
+
+  @override
+  _AgriculturalCentersScreenState createState() =>
+      _AgriculturalCentersScreenState();
+}
+
+class _AgriculturalCentersScreenState extends State<AgriculturalCentersScreen> {
+  GoogleMapController? mapController;
+  Shop? hoveredShop;
+  final Set<Marker> _markers = {};
+  int? selectedIndex;
+
+  final LatLng bangaloreLocation = const LatLng(12.9716, 77.5946);
+
+  // Hardcoded top agricultural shops/fertilizer centers in Bangalore
+  final List<Shop> hardcodedShops = [
+    Shop(
+      name: "AgroStar Agriculture Store",
+      lat: 12.9718915,
+      lng: 77.6411545,
+      address: "Indiranagar, Bangalore",
+      rating: 4.5,
+      phone: "+91 98765 43210",
+    ),
+    Shop(
+      name: "Krishi Fertilizers",
+      lat: 12.926031,
+      lng: 77.676246,
+      address: "Marathahalli, Bangalore",
+      rating: 4.2,
+      phone: "+91 98453 12345",
+    ),
+    Shop(
+      name: "GreenGrow Farm Supplies",
+      lat: 12.935223,
+      lng: 77.624487,
+      address: "Koramangala, Bangalore",
+      rating: 4.8,
+      phone: "+91 99000 11223",
+    ),
+    Shop(
+      name: "AgriMart",
+      lat: 12.9791198,
+      lng: 77.5912997,
+      address: "MG Road, Bangalore",
+      rating: 4.1,
+      phone: "+91 97400 22334",
+    ),
+    Shop(
+      name: "Fertilizer World",
+      lat: 12.971998,
+      lng: 77.599887,
+      address: "Majestic, Bangalore",
+      rating: 4.0,
+      phone: "+91 95388 99887",
+    ),
+  ];
 
   @override
   void initState() {
     super.initState();
-    _requestLocationPermission();
+    _createMarkers();
   }
 
-  Future<void> _requestLocationPermission() async {
-    setState(() => _loading = true);
-
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      _showSnackbar("Location services are disabled. Please enable them.");
-      _currentLocation = _defaultLocation;
-      setState(() => _loading = false);
-      return;
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        _showSnackbar("Location permission denied. Using default location.");
-        _currentLocation = _defaultLocation;
-        setState(() => _loading = false);
-        return;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      _showSnackbar("Location permissions are permanently denied.");
-      _currentLocation = _defaultLocation;
-      setState(() => _loading = false);
-      return;
-    }
-
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-
-    setState(() {
-      _currentLocation = LatLng(position.latitude, position.longitude);
-      _loading = false;
-    });
-
-    _fetchPlaces();
-  }
-
-  Future<void> _fetchPlaces() async {
-    if (_currentLocation == null) return;
-
-    const apiKey = 'AIzaSyAIvOQ5TMxm9IdWuZeipj4OyASsOyiKLTo'; // Replace with your actual API key
-    final url =
-        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_currentLocation!.latitude},${_currentLocation!.longitude}&radius=2000&type=store&keyword=agriculture&key=$apiKey';
-
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        print(data);
-        final results = data['results'] as List;
-
-        setState(() {
-          _places = results.map((place) {
-            return {
-              'name': place['name'],
-              'address': place['vicinity'],
-              'rating': place['rating'],
-              'location': LatLng(
-                place['geometry']['location']['lat'],
-                place['geometry']['location']['lng'],
-              ),
-              'image': place['photos'] != null
-                  ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${place['photos'][0]['photo_reference']}&key=$apiKey'
-                  : null,
-            };
-          }).toList();
-        });
-      } else {
-        _showSnackbar("Failed to fetch places. Error: ${response.statusCode}");
-      }
-    } catch (e) {
-      _showSnackbar("An error occurred: $e");
+  void _createMarkers() {
+    for (int i = 0; i < hardcodedShops.length; i++) {
+      final shop = hardcodedShops[i];
+      _markers.add(
+        Marker(
+          markerId: MarkerId(shop.name),
+          position: LatLng(shop.lat, shop.lng),
+          infoWindow: InfoWindow(
+            title: shop.name,
+            snippet: "${shop.address} • Rating: ${shop.rating}",
+          ),
+          onTap: () {
+            setState(() {
+              hoveredShop = shop;
+              selectedIndex = i;
+            });
+          },
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+        ),
+      );
     }
   }
 
-  void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+
+  void _openDirections(double lat, double lng) async {
+    final url = 'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open the map.')),
+      );
+    }
+  }
+
+  void _makePhoneCall(String phone) async {
+    final url = 'tel:$phone';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not make the call.')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nearby Stores'),
+        automaticallyImplyLeading: false,
+        title: const Text('Agricultural Resource Centers'),
+        backgroundColor: Colors.green,
+        elevation: 0,
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
+      body: Column(
         children: [
           Expanded(
-            child: _currentLocation == null
-                ? const Center(child: CircularProgressIndicator())
-                : GoogleMap(
-              mapType: MapType.normal,
+            flex: 1,
+            child: GoogleMap(
+              onMapCreated: _onMapCreated,
               initialCameraPosition: CameraPosition(
-                target: _currentLocation ?? _defaultLocation,
-                zoom: 14.0,
+                target: bangaloreLocation,
+                zoom: 12,
               ),
-              onMapCreated: (controller) {
-                _controller.complete(controller);
-              },
-              markers: _places.map((place) {
-                return Marker(
-                  markerId: MarkerId(place['name']),
-                  position: place['location'],
-                  infoWindow: InfoWindow(
-                    title: place['name'],
-                    snippet: place['address'],
-                  ),
-                );
-              }).toSet(),
+              markers: _markers,
+              mapType: MapType.normal,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
+              compassEnabled: true,
+              zoomControlsEnabled: true,
             ),
           ),
-          Container(
-            height: 200,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _places.length,
-              itemBuilder: (context, index) {
-                final place = _places[index];
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+          Expanded(
+            flex: 1,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              color: Colors.grey[100],
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: hardcodedShops.length,
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                itemBuilder: (context, index) {
+                  final shop = hardcodedShops[index];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = index;
+                        hoveredShop = shop;
+                      });
+
+                      mapController?.animateCamera(
+                        CameraUpdate.newLatLng(LatLng(shop.lat, shop.lng)),
+                      );
+                    },
                     child: Container(
-                      width: 300,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          place['image'] != null
-                              ? ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(16),
-                            ),
-                            child: Image.network(
-                              place['image'],
-                              width: 300,
-                              height: 150,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                              : Container(
-                            width: 300,
-                            height: 150,
-                            color: Colors.grey,
-                            child: const Icon(
-                              Icons.store,
-                              size: 50,
-                              color: Colors.white,
-                            ),
+                      width: screenWidth * 0.8,
+                      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                      child: Card(
+                        color: selectedIndex == index ? Colors.green[50] : Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: selectedIndex == index ? Colors.green : Colors.transparent,
+                            width: 2,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              place['name'],
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                            const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              place['address'],
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.star,
-                                  size: 16,
-                                  color: Colors.amber,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                shop.name,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
                                 ),
-                                Text(
-                                  place['rating'] != null
-                                      ? '${place['rating']}'
-                                      : 'N/A',
-                                  style: const TextStyle(
-                                    fontSize: 14,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Address: ${shop.address}',
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Text(
+                                    'Rating: ',
+                                    style: TextStyle(fontSize: 14),
                                   ),
-                                ),
-                              ],
-                            ),
+                                  Text(
+                                    '${shop.rating}',
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  _buildRatingStars(shop.rating),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Phone: ${shop.phone}',
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              const Spacer(),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  ElevatedButton.icon(
+                                    onPressed: () => _openDirections(shop.lat, shop.lng),
+                                    icon: const Icon(Icons.directions),
+                                    label: const Text('Directions'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.green,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                  ),
+                                  ElevatedButton.icon(
+                                    onPressed: () => _makePhoneCall(shop.phone),
+                                    icon: const Icon(Icons.phone),
+                                    label: const Text('Call'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildRatingStars(double rating) {
+    return Row(
+      children: List.generate(5, (index) {
+        if (index < rating.floor()) {
+          return const Icon(Icons.star, color: Colors.amber, size: 16);
+        } else if (index == rating.floor() && rating % 1 > 0) {
+          return const Icon(Icons.star_half, color: Colors.amber, size: 16);
+        } else {
+          return const Icon(Icons.star_border, color: Colors.amber, size: 16);
+        }
+      }),
     );
   }
 }

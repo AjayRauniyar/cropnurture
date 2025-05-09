@@ -7,20 +7,20 @@ class DiscussionPage extends StatelessWidget {
     {
       "id": "1",
       "title": "What is this pest on my wheat?",
-      "author": "Farmer John",
-      "imageUrl": "https://via.placeholder.com/150",
+      "author": "Farmer Ashok",
+      "imageUrl": "https://israelagri.com/wp-content/uploads/2022/07/2009Kots.jpg",
       "upvotes": 24,
       "commentsCount": 8,
       "tags": ["Wheat", "Pests"],
     },
     {
       "id": "2",
-      "title": "How to prevent overwatering in rice?",
-      "author": "Farmer Jane",
-      "imageUrl": "https://via.placeholder.com/150",
+      "title": "How to prevent Rice Spot?",
+      "author": "Farmer Kishan",
+      "imageUrl": "https://farm.ws/wp-content/uploads/2022/04/rice-g48e72cbc3_640.jpg",
       "upvotes": 15,
       "commentsCount": 5,
-      "tags": ["Rice", "Watering"],
+      "tags": ["Rice", "Spot"],
     },
   ];
 

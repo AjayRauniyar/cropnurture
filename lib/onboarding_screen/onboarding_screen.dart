@@ -145,7 +145,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       ),
                                     ),
                                   // Add padding or a SizedBox for spacing
-                                  SizedBox(height: height * 0.1), // Adjust the height as needed for spacing
+                                  SizedBox(height: height * 0.05), // Adjust the height as needed for spacing
                                 ],
                               )
                             else

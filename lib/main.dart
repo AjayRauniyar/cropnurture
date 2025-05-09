@@ -110,7 +110,7 @@ class _AnimatedLogoScreenState extends State<AnimatedLogoScreen>
             );
           },
           child: Image.asset(
-            'assets/images/logo.png', // Path to your logo
+            'assets/images/applogo.png', // Path to your logo
             width: 200,
             height: 200,
           ),

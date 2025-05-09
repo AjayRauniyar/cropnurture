@@ -81,7 +81,7 @@ class ProfileHeader extends StatelessWidget {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
-                  "Premium Member",
+                  "Regular Member",
                   style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -96,7 +96,7 @@ class ProfileHeader extends StatelessWidget {
 class ProfileDetailsSection extends StatelessWidget {
   final details = [
     {"icon": Icons.person, "title": "Gender", "value": "Male"},
-    {"icon": Icons.phone, "title": "Contact", "value": "+123456789"},
+    {"icon": Icons.phone, "title": "Contact", "value": "+911234567890"},
     {"icon": Icons.grass, "title": "Farm Size", "value": "5 Acres"},
     {"icon": Icons.local_florist, "title": "Crops", "value": "Wheat, Corn"},
   ];
@@ -137,7 +137,7 @@ class BusinessMetricsSection extends StatelessWidget {
   final metrics = [
     {"icon": Icons.image, "title": "Images Uploaded", "value": "120"},
     {"icon": Icons.bar_chart, "title": "Game Score", "value": "85%"},
-    {"icon": Icons.shopping_bag, "title": "Total Sales", "value": "\$50,000"},
+    {"icon": Icons.shopping_bag, "title": "Total Sales", "value": "\R\s 50,000"},
   ];
 
   @override

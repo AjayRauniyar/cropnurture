@@ -1,5 +1,8 @@
+import 'package:cropnurture/screens/Google_maps_screen.dart';
 import 'package:cropnurture/screens/crop_screen.dart';
 import 'package:cropnurture/screens/discussion_page.dart';
+import 'package:cropnurture/screens/disease_scan_screen.dart';
+import 'package:cropnurture/screens/education_screen.dart';
 import 'package:cropnurture/screens/outbreak_alerts_screen.dart';
 import 'package:cropnurture/screens/profile_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -30,8 +33,11 @@ class _FarmerHomeState extends State<FarmerHome> {
   final List<Widget> _pages = [
     HomeScreen(),
     CropScannerScreen(),
+    ScanScreen(),
     PredictionScreen(),
     DiscussionPage(),
+    AgriculturalCentersScreen(),
+    EducationScreen(),
     ProfileScreen(),
   ];
 
@@ -55,9 +61,12 @@ class _FarmerHomeState extends State<FarmerHome> {
         animationCurve: Curves.easeInOut,
         items: [
           Icon(Icons.home, size: 30, color: Colors.white),
+          Icon(FontAwesomeIcons.plantWilt, size: 30, color: Colors.white),
           Icon(FontAwesomeIcons.seedling, size: 30, color: Colors.white),
           Icon(Icons.grass_sharp, size: 30, color: Colors.white),
           Icon(Icons.chat_rounded, size: 30, color: Colors.white),
+          Icon(Icons.near_me_sharp, size: 30, color: Colors.white),
+          Icon(Icons.video_collection, size: 30, color: Colors.white),
           Icon(Icons.person, size: 30, color: Colors.white),
         ],
         index: _currentIndex, // Set the index for the navbar

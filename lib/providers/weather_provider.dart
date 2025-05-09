@@ -7,6 +7,9 @@ class WeatherProvider with ChangeNotifier {
   String locationName = 'Fetching location...';
   String weatherText = '';
   String temperature = '';
+  String   humidity = '';
+  String rainfall = '';
+
   String weatherIconUrl = '';
   double? latitude;
   double? longitude;
@@ -61,8 +64,10 @@ class WeatherProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         locationName = data['location']['name'];
-        temperature = '${data['current']['temp_c']}°C';
+        temperature = '${data['current']['temp_c']}';
         weatherText = data['current']['condition']['text'];
+        humidity = '${data['current']['humidity']}';
+        rainfall = '${data['current']['precip_mm']}';
         weatherIconUrl = 'https:${data['current']['condition']['icon']}';
       } else {
         throw Exception('Failed to fetch weather data');

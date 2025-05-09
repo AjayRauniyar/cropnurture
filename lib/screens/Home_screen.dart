@@ -93,7 +93,7 @@ class CurvedAppBar extends StatelessWidget implements PreferredSizeWidget {
                     children: [
                       Icon(Icons.location_on, color: Colors.white, size: 20),
                       Text(
-                        weatherProvider.locationName,
+                         weatherProvider.locationName,
                         style: TextStyle(color: Colors.white70, fontSize: 16),
                       ),
                     ],
@@ -107,7 +107,7 @@ class CurvedAppBar extends StatelessWidget implements PreferredSizeWidget {
                           : Icon(Icons.cloud, color: Colors.white, size: 30),
                       SizedBox(width: 10),
                       Text(
-                        "${weatherProvider.temperature} | ${weatherProvider.weatherText}",
+                        "${weatherProvider.temperature}°C | ${weatherProvider.weatherText}",
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                     ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lottie/lottie.dart';
 import '../providers/api_provider.dart';
+import '../providers/weather_provider.dart';
 
 class PredictionScreen extends StatefulWidget {
   @override
@@ -10,10 +11,10 @@ class PredictionScreen extends StatefulWidget {
 
 class _PredictionScreenState extends State<PredictionScreen> {
   final Map<String, dynamic> inputs = {
-    "soil_nitrogen": "",
-    "soil_phosphorus": "",
-    "soil_potassium": "",
-    "soil_ph": "",
+    "soil_nitrogen": "45",
+    "soil_phosphorus": "62",
+    "soil_potassium": "74",
+    "soil_ph": "7",
     "temperature": "",
     "humidity": "",
     "rainfall": "",
@@ -100,7 +101,7 @@ class CurvedAppBar extends StatelessWidget implements PreferredSizeWidget {
                 title,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -144,6 +145,12 @@ class InputForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final weatherProvider = Provider.of<WeatherProvider>(context, listen: false);
+
+    // Fetch location and weather data when the screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      weatherProvider.fetchLocationAndWeather();
+    });
     final List<String> inputLabels = [
       "Soil Nitrogen",
       "Soil Phosphorus",
@@ -154,7 +161,15 @@ class InputForm extends StatelessWidget {
       "Rainfall",
       "NDVI"
     ];
-
+    // Automatically assign weather values and NDVI
+    inputs["nitrogen"] = "25";
+    inputs["soil_phosphorus"]="62";
+    inputs["soil_potassium"]= "74";
+    inputs["soil_ph"]="7";
+    inputs["temperature"] = weatherProvider.temperature;
+    inputs["humidity"] = weatherProvider.humidity;
+    inputs["rainfall"] = weatherProvider.rainfall;
+    inputs["ndvi"] = "0.5"; // NDVI constant
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -172,6 +187,9 @@ class InputForm extends StatelessWidget {
             itemBuilder: (context, index) {
               String label = inputLabels[index];
               String key = label.toLowerCase().replaceAll(" ", "_");
+              String? initialValue = (key == "soil_nitrogen" ||key == "soil_phosphorus" ||key == "soil_potassium" ||key == "temperature"|| key == "soil_ph" || key == "humidity" || key == "rainfall" || key == "ndvi")
+                  ? inputs[key]
+                  : "";
               return Card(
                 elevation: 2,
                 shape: RoundedRectangleBorder(
@@ -185,7 +203,9 @@ class InputForm extends StatelessWidget {
                       labelText: label,
                       border: InputBorder.none,
                     ),
+                    controller: TextEditingController(text: initialValue),
                     onChanged: (value) => onInputChanged(key, value),
+                    enabled: !(key == "soil_nitrogen" ||key == "soil_phosphorus" ||key == "soil_potassium" ||key == "soil_ph" ||key == "temperature" || key == "humidity" || key == "rainfall" || key == "ndvi"),
                   ),
                 ),
               );

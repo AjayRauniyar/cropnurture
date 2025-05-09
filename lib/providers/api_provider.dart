@@ -9,7 +9,7 @@ class ApiProvider extends ChangeNotifier {
 
   Future<void> fetchPrediction(Map<String, dynamic> inputs) async {
     // final url = Uri.parse("https://sih-1638-app.onrender.com/predict");
-    final url = Uri.parse("http://10.0.2.2:5001/predict");
+    final url = Uri.parse("http://192.168.0.112:5001/predict");
     try {
       final response = await http.post(
         url,

@@ -50,8 +50,8 @@ class CropScannerProvider with ChangeNotifier {
         _diagnosisResult = null;
         _recommendation = null;
         notifyListeners();
-
-        final uri = Uri.parse('http://10.0.2.2:5002/predict');
+        final uri = Uri.parse('http://192.168.0.112:5002/predict');
+        // final uri = Uri.parse('http://192.168.110.237:5002/predict');
         final request = http.MultipartRequest('POST', uri);
         final file = await http.MultipartFile.fromPath('file', _selectedImage!.path);
 
