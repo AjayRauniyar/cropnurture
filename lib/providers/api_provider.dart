@@ -28,6 +28,7 @@ class ApiProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+   // notifyListeners();
   }
 
   void resetPrediction() {
